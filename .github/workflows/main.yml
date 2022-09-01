@@ -1,0 +1,116 @@
+name: CI/CD Pipeline
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: Unit Tests
+    
+    runs-on: ubuntu-latest
+    steps:
+      #Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      
+      #Java JDK
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '17'
+          
+      #Maven Cache
+      - name: Cache Maven Packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      #Run Tests
+      - name: Run Tests
+        run: mvn test
+
+  #Linter Job
+#  super-lint:
+#    needs: tests
+#    name: Lint Code
+#    runs-on: ubuntu-latest
+#    steps:
+#      #Checkout Code
+#      - name: Checkout Code
+#        uses: actions/checkout@v1
+#      
+#      #Java JDK
+#      - name: Set up JDK
+#        uses: actions/setup-java@v1
+#        with:
+#          java-version: '17'
+#      
+#      #Super Linter
+#      - name: Run Super-Linter
+#        uses: github/super-linter@v4.9.0
+#        env:
+#          GITHUB_TOKEN: $@@ secrets.GITHUB_TOKEN }}
+
+  #Build Job
+  build:
+    needs: tests
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      #Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        
+      #Java JDK
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '17'
+          
+      #Maven Cache
+      - name: Cache Maven Packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+          
+      #Build
+      - name: Build with Maven
+        run: mvn clean install
+        
+      #Build JAR-File
+      - name: Upload JAR
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact
+          path: target/season_checker-0.0.1-SNAPSHOT.jar
+        
+       
+  deploy:
+    needs: build
+    name: Deploy
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download Jar
+        uses: actions/download-artifact@v3
+        with:
+          name: artifact
+      #Deploy
+      - name: Publish Package
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: season_checker-0.0.1-SNAPSHOT.jar
+          asset_name: release.jar
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "This is my release text"
