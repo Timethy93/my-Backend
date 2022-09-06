@@ -5,55 +5,45 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity(name = "lebensmittel") // This tells Hibernate to make a table out of this class
+@Entity(name = "lebensmittel")
 public class LebensmittelEntity {
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
 
-  private String name;
-  private String anfangsDatum;
-  private String endDatum;
-  private boolean isFavorit;
+	private String name;
+	private String anfangsDatum;
+	private String endDatum;
+	private boolean isFavorit;
 
-  public String getAnfangsDatum() {
-    return anfangsDatum;
-  }
+	public LebensmittelEntity() {
 
-  public void setAnfangsDatum(String anfangsDatum) {
-    this.anfangsDatum = anfangsDatum;
-  }
+	}
 
-  public String getEndDatum() {
-    return endDatum;
-  }
+	public LebensmittelEntity(String name, String anfangsDatum, String endDatum, boolean isFavorit) {
+		this.name = name;
+		this.anfangsDatum = anfangsDatum;
+		this.endDatum = endDatum;
+		this.isFavorit = isFavorit;
+	}
 
-  public void setEndDatum(String endDatum) {
-    this.endDatum = endDatum;
-  }
+	public String getAnfangsDatum() {
+		return anfangsDatum;
+	}
 
-  public boolean isFavorit() {
-    return isFavorit;
-  }
+	public String getEndDatum() {
+		return endDatum;
+	}
 
-  public void setFavorit(boolean isFavorit) {
-    this.isFavorit = isFavorit;
-  }
+	public boolean isFavorit() {
+		return isFavorit;
+	}
 
-  public Integer getId() {
-    return id;
-  }
+	public Integer getId() {
+		return id;
+	}
 
-  public void setId(Integer id) {
-    this.id = id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
+	public String getName() {
+		return name;
+	}
 }
