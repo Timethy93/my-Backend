@@ -1,7 +1,11 @@
 package com.backend.season_checker;
 
+import javax.transaction.Transactional;
+
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 public interface ConnectRepository extends CrudRepository<LebensmittelEntity, Integer> {
 
@@ -9,8 +13,10 @@ public interface ConnectRepository extends CrudRepository<LebensmittelEntity, In
     Iterable<LebensmittelEntity> findAllOnSeason(int heute);
 
     // update favourit useless
-    @Query(value = "UPDATE db_paul.lebensmittel SET db_paul.lebensmittel.is_favorit = ?1 WHERE db_paul.lebensmittel.id = ?2 ; ", nativeQuery = true)
-    Iterable<LebensmittelEntity> updateTrueFalse(boolean neuenFav, int id);
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE db_paul.lebensmittel SET db_paul.lebensmittel.is_favorit = :neuenFav WHERE db_paul.lebensmittel.id = :id ; ", nativeQuery = true)
+    void updateTrueFalse(@Param("neuenFav") boolean neuenFav, @Param("id") int id);
 
     @Query(value = "SELECT * FROM db_paul.lebensmittel WHERE db_paul.lebensmittel.id = ?1 ; ", nativeQuery = true)
     LebensmittelEntity getLebensmittelById(int id);
