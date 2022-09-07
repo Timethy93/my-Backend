@@ -65,6 +65,18 @@ public class MainController {
     return userRepository.findAllOnSeason(heute);
   };
 
+  @GetMapping(path = "/updateFavorit/{id}/{isFavorit}")
+  @ResponseBody
+  public LebensmittelEntity getUpdateFav(
+      @PathVariable int id,
+      @PathVariable boolean isFavorit) {
+
+    LebensmittelEntity entity = userRepository.getLebensmittelById(id);
+    entity.setFavorit(isFavorit);
+
+    return userRepository.save(entity);
+  };
+
   @RequestMapping(path = "/addEntity/{name}/{anfangsDatum}/{endDatum}/{isFavorit}", method = RequestMethod.GET)
   @ResponseBody
   public String getTest(
