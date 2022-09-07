@@ -15,6 +15,10 @@ public class LebensmittelEntity {
 	private String endDatum;
 	private boolean isFavorit;
 
+	public void setFavorit(boolean isFavorit) {
+		this.isFavorit = isFavorit;
+	}
+
 	public LebensmittelEntity() {
 
 	}
