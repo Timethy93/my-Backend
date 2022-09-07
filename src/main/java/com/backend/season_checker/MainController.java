@@ -38,32 +38,51 @@ public class MainController {
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMdd");
     LocalDateTime now = LocalDateTime.now();
     int heute = Integer.parseInt(dtf.format(now));
-
     ArrayList<Object> myList = new ArrayList<Object>();
 
     for (LebensmittelEntity currentEntry : allData) {
       int anfang = Integer.parseInt(currentEntry.getAnfangsDatum().replace("-", ""));
       int ende = Integer.parseInt(currentEntry.getEndDatum().replace("-", ""));
-
-      if (anfang > heute || ende < heute) {
-
+      boolean isUeberJahr = anfang > ende;
+      if ((anfang > heute || ende < heute) && !(isUeberJahr && ((ende > heute) || (anfang < heute)))) {
         myList.add(currentEntry);
-
       }
-
     }
     return myList;
-
   }
 
   @GetMapping(path = "/allOnSeason")
   @ResponseBody
-  public Iterable<LebensmittelEntity> getAllOnSeason() {
+  public ArrayList<Object> getallOnSeason() {
+    Iterable<LebensmittelEntity> allData = userRepository.findAll();
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMdd");
     LocalDateTime now = LocalDateTime.now();
     int heute = Integer.parseInt(dtf.format(now));
-    return userRepository.findAllOnSeason(heute);
-  };
+    boolean isUeberJahr = false;
+    ArrayList<Object> myList = new ArrayList<Object>();
+
+    for (LebensmittelEntity currentEntry : allData) {
+      int anfang = Integer.parseInt(currentEntry.getAnfangsDatum().replace("-", ""));
+      int ende = Integer.parseInt(currentEntry.getEndDatum().replace("-", ""));
+      isUeberJahr = anfang > ende;
+      if (isUeberJahr && ((ende > heute) || (anfang < heute))) {
+        myList.add(currentEntry);
+      }
+      if (anfang < heute && ende > heute) {
+        myList.add(currentEntry);
+      }
+    }
+    return myList;
+  }
+
+  // @GetMapping(path = "/allOnSeason")
+  // @ResponseBody
+  // public Iterable<LebensmittelEntity> getAllOnSeason() {
+  // DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMdd");
+  // LocalDateTime now = LocalDateTime.now();
+  // int heute = Integer.parseInt(dtf.format(now));
+  // return userRepository.findAllOnSeason(heute);
+  // };
 
   @GetMapping(path = "/updateFavoritTest/{id}/{isFavorit}")
   public void getUpdateFavTest(
